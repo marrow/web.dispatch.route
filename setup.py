@@ -43,7 +43,7 @@ tests_require = [
 		'pytest-cov',  # coverage reporting
 		'pytest-flakes',  # syntax validation
 		'pytest-cagoule',  # intelligent test execution
-		'pytest-spec<=0.2.22',  # output formatting
+		'pytest-spec',  # output formatting
 	]
 
 

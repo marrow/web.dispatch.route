@@ -18,8 +18,8 @@ from setuptools.command.test import test as TestCommand
 
 if sys.version_info < (2, 7):
 	raise SystemExit("Python 2.7 or later is required.")
-elif sys.version_info > (3, 0) and sys.version_info < (3, 3):
-	raise SystemExit("Python 3.3 or later is required.")
+elif sys.version_info > (3, 0) and sys.version_info < (3, 2):
+	raise SystemExit("Python 3.2 or later is required.")
 
 exec(open(os.path.join("web", "dispatch", "route", "release.py")).read())
 
@@ -48,7 +48,7 @@ tests_require = [
 
 
 setup(
-	name = "WebCore.dispatch.route",
+	name = "web.dispatch.route",
 	version = version,
 	
 	description = description,
@@ -89,13 +89,11 @@ setup(
 	
 	entry_points = {
 			'web.dispatch': [
-					'route = web.dispatch.route:RoutingDispatch',  # efficient regular expression routes
+					'route = web.dispatch.route:RouteDispatch',  # efficient regular expression routes
 				],
 		},
 	
 	install_requires = [
-			'marrow.package<2.0',  # dynamic execution and plugin management
-			'WebOb',  # HTTP request and response objects, and HTTP status code exceptions
 		],
 	
 	extras_require = dict(

@@ -2,13 +2,10 @@
 
 from inspect import isclass
 
-from marrow.util.compat import unicode
-from marrow.wsgi.exceptions import HTTPNotFound
-
 from .router import Router
 
 
-class RoutingDispatch(object):
+class RouteDispatch(object):
 	def __init__(self, config):
 		super(RoutingDialect, self).__init__()
 	

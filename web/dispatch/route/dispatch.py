@@ -1,49 +1,48 @@
 # encoding: utf-8
 
 from inspect import isclass
-
-from marrow.util.compat import unicode
-from marrow.wsgi.exceptions import HTTPNotFound
+from functools import partial
 
 from .router import Router
 
+if __debug__:
+	import warnings
+	from collections import deque
 
-class RoutingDispatch(object):
-	def __init__(self, config):
-		super(RoutingDialect, self).__init__()
-	
-	def __call__(self, context, root):
-		log = context.log
-		path = context.request.remainder
-		
-		# Capture and eliminate the final, empty path element.
-		# If present there was a trailing slash in the original path, which we don't care about.
-		if path[-1:] == ['']:
-			path.pop()
-		
-		path = unicode(path)
-		
-		if isclass(root):
-			# Build a strongly-bound router for this object.
-			# If you add new routes during method calls, pass self.__router__ as a second argument to
-			# the @route decorator to ensure your route is discoverable.
-			root = root(context)
-			
-			if not hasattr(root, '__router__'):
-				router = root.__router__ = Router()
+
+log = __import__('logging').getLogger(__name__)
+
+
+class RouteDispatch(object):
+	def __call__(self, context, obj, path):
+		if __debug__:
+			if not isinstance(path, deque):
+				warnings.warn(
+						"Your code uses auto-casting of paths to a deque; "
+						"this will explode gloriously if run in a production environment.",
+						RuntimeWarning, stacklevel=1
+					)
 				
-				for name in (i for i in dir(root) if not i.startswith('_')):
-					obj = getattr(root, name)
-					route =  getattr(obj, '__route__', None)
-					if not route: continue
-					router.register(route, obj)
+				if isinstance(path, str):
+					path = deque(path.split('/')[1 if not path or path.startswith('/') else 0:])
+				else:
+					path = deque(path)
+			
+			log.debug("Preparing route dispatch.", extra=dict(
+					dispatcher = repr(self),
+					context = repr(context),
+					obj = repr(obj),
+					path = list(path)
+				))
 		
-		try:
-			target, remainder, args = router.route(path)
-			remainder = '/' + '/'.join(remainder)
-			context.request.kwargs.update(args)
+		router = Router.from_object(obj)
+		processed, target, kwargs = router.route(path)
 		
-		except ValueError as e:
-			raise HTTPNotFound()
+		if isclass(obj):
+			obj = obj() if context is None else obj(context)
+			yield None, obj, False  # Let everyone know we instantiated something.
+			target = partial(target, obj, **kwargs)
+		else:
+			target = partial(target, **kwargs)
 		
-		yield path[:len(path)-len(remainder)].split('/'), target, not hasattr(target, '__dialect__')
+		yield processed, target, True

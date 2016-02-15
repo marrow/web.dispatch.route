@@ -9,11 +9,6 @@ if __debug__:
 	import warnings
 	from collections import deque
 
-try:
-	str = unicode
-except:
-	str = str
-
 
 log = __import__('logging').getLogger(__name__)
 

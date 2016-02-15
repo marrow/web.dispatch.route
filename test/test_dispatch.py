@@ -29,20 +29,6 @@ def test_instantiated():
 	assert result[0][2] is True
 
 
-def test_instantiated_with_context():
-	class InstantiatedRoot(object):
-		def hello(self, context, name):
-			return "Hello " + name + " and " + context
-		hello.__route__ = "/hello/{name}"
-	
-	root = InstantiatedRoot()
-	result = list(RouteDispatch()("Bob Dole", root, deque(['hello', 'world'])))
-	assert len(result) == 1
-	assert result[0][0] == ('hello', 'world')
-	assert result[0][1]() == "Hello world and Bob Dole"
-	assert result[0][2] is True
-
-
 if __debug__:
 	class TestFallbackBehaviour(object):
 		def test_string_value(self, dispatch):

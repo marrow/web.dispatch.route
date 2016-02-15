@@ -42,9 +42,7 @@ class RouteDispatch(object):
 			obj = obj() if context is None else obj(context)
 			yield None, obj, False  # Let everyone know we instantiated something.
 			target = partial(target, obj, **kwargs)
-		elif context is None:
-			target = partial(target, **kwargs)
 		else:
-			target = partial(target, context, **kwargs)
+			target = partial(target, **kwargs)
 		
 		yield processed, target, True

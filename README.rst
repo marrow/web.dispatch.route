@@ -21,8 +21,18 @@ Dispatch is the process of taking some starting point and a path, then resolving
 process is common to almost every web application framework (transforming URLs into controllers), RPC system, and even
 filesystem shell. Other terms for this process include: "traversal", "routing", or "lookup".
 
+Route-based dispatch is the variant of dispatch that uses handlers for explicitly registered paths, optionally with
+regular expression (regex)-based path elements. This implementation exposes an API that particularly benefits from the
+use of mix-ins as traits. This gives a clean flexability to routes that are difficult to beat.
 
+Most implementations of regex-based routing do so in a naïve way, often iterating lists of all routes at O(n)
+worst-case. Others allow you to manually partition the space with sub-routers, or optimize by declaration or
+manual lexicographical order. Some produce monolithic regular expressions that can cause instability when an
+application grows beyond a certain size. Some even iterate the whole list even after finding an endpoint.
 
+This dispatcher does not. It builds a tree, and descends the tree preferring static elements to dynamic ones,
+with a controllalbe presedence at declaration. It optionally handles binding matched dynamic elements to arguments on
+the resulting endpoint. Performance is O(depth) worst-case.
 
 This package speaks a standardized `dispatch protocol <https://github.com/marrow/WebCore/wiki/Dispatch-Protocol>`_ and
 is not entirely intended for direct use by most developers. The target audience is instead the authors of frameworks
@@ -77,7 +87,111 @@ and submit a pull request.  This process is beyond the scope of this documentati
 Usage
 =====
 
+This section is split between framework authors who will be integrating the overall protocol into their systems, and
+the "producers" using the system to register routes according to the API.
 
+Framework Use
+-------------
+
+To begin resolving paths against routes registered in objects, first instantiate the dispatcher::
+
+    from web.dispatch.route import RouteDispatch
+    
+    dispatch = RouteDispatch()
+
+Currently the route dispatcher has no configuration options.  With a prepared dispatcher, and supposing you have some
+object to dispatch against, you'll need to prepare the path according to the protocol::
+
+    path = "/foo/bar/baz"  # Initial path, i.e. an HTTP request's PATH_INFO.
+    path = path.split('/')  # Find the path components.
+    path = path[1:]  # Skip the singular leading slash; see the API specification.
+    path = deque(path)  # Provide the path as a deque instance, allowing popleft.
+
+Of course, the above is rarely split apart like that. We split apart the invidiual steps of path processing here to
+more clearly illustrate. In a web framework the above would happen once per request that uses dispatch. This, of
+course, frees your framework to use whatever internal or public representation of path you want: choices of
+separators, and the ability for deque to consume arbitrary iterables. An RPC system might ``split`` on a period and
+simply not have the possibility of leading separators. Etc.
+
+You can now call the dispatcher and iterate the dispatch events::
+
+    for segment, handler, endpoint, *meta in dispatch(None, some_object, path):
+        print(segment, handler, endpoint)  # Do something with this information.
+
+The initial ``None`` value there represents the "context" to pass along to initializers of classes encountered during
+dispatch.  If the value ``None`` is provided, classes won't be instantiated with any arguments. If a context is
+provided it will be passed as the first positional argument to instantiation.
+
+After completing iteration, check the final ``endpoint``. If it is ``True`` then the path was successfully mapped to
+the object referenced by the ``handler`` variable. If dispatch is unsuccessful, a ``LookupError`` is raised with an
+explanation referencing the path element that caused the erorr.
+
+You can always just skip straight to the answer if you so choose::
+
+    try:
+        segment, handler, endpoint, *meta = list(dispatch(None, some_object, path))[-1]
+    except LookupError:
+        ... # Dispatch failed.
+
+However, providing some mechanism for callbacks or notifications of dispatch is often far more generally useful.
+
+**Note:** It is entirely permissable for dispatchers to return ``None`` as a processed path segment. Route-based
+dispatch will do this to announce the starting point of dispatch. This is especially useful if you need to know if the
+initial object was a class that was instantiated.  (In that event ``handler`` will be an instance of ``some_object``
+during the first iteration instead of being literally ``some_object``.)  Other dispatchers may return ``None`` at
+other times, such as to indicate multiple steps of intermediate processing.
+
+Python 2 & 3 Compatibility
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The dispatch protocol is designed to be extendable in the future by using ``namedtuple`` subclasses, however this has
+an impact on usage as you may have noticed the ``*meta`` in there. This syntax, introduced in Python 3, will gather
+any extraneous tuple elements into a separate list. If you actually care about the metadata do not unpack the tuple
+this way.  Instead::
+
+    for meta in dispatch(None, some_object, path):
+        segment, handler, endpoint = step[:3]  # Unpack, but preserve.
+        print(segment, handler, endpoint, meta)  # Do something with this information.
+
+This document is written from the perspective of modern Python 3, and throwing away the metadata within the ``for``
+statement itself provides more compact examples. The above method of unpacking the first three values is the truly
+portable way to do this across versions.
+
+
+Basic Routable Objects
+----------------------
+
+The simplest routable object is one that has some attribute with a ``__route__`` attribute of its own::
+
+    class Root:
+        def hello(self, name):
+            return "Hello " + name
+        
+        hello.__route__ = '/{name}'
+
+This defines a method capable of handling any single path element. Because this is a common pattern, and having such
+annotations after the method body, divorced from the method's definition, is ugly, a decorator is provided::
+
+    from web.dispatch.route import route
+
+    class Root:
+        @route('/{name}')
+        def hello(self, name):
+            return "Hello " + name
+
+Now an attempt to access a path such as ``/world`` will result in version of the method with that argument already
+bound to it. The syntax allows for customization of the default expression, which is simply "any single path element".
+To do so, after the name add a colon (``:``) followed by the custom expression. Be careful not to use any forward
+slashes within your expression::
+
+    class Root:
+        @route('/{name:[a-zA-Z ]+}/{age:[1-9][0-9]*}')
+        def hello(self, name, age):
+            return name + " is " + age + " years old"
+
+Now access to ``/dad/27`` is valid, returning a callable that when executed will return ``dad is 27 years old``, but
+``/42/dad`` is invalid, and won't match any routes. When using the ``route`` decorator declaration order is preserved
+via the ``__index__`` annotation.
 
 
 Version History

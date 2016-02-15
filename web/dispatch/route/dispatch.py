@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from inspect import isclass
+from functools import partial
 
 from .router import Router
 
@@ -14,10 +15,10 @@ except:
 	str = str
 
 
+log = __import__('logging').getLogger(__name__)
+
+
 class RouteDispatch(object):
-	def __init__(self, config):
-		super(RouteDispatch, self).__init__()
-	
 	def __call__(self, context, obj, path):
 		if __debug__:
 			if not isinstance(path, deque):
@@ -39,48 +40,16 @@ class RouteDispatch(object):
 					path = list(path)
 				))
 		
-		if isclass(obj): # Build a strongly-bound router for this object.
+		router = Router.from_object(obj)
+		processed, target, kwargs = router.route(path)
+		
+		if isclass(obj):
 			obj = obj() if context is None else obj(context)
 			yield None, obj, False  # Let everyone know we instantiated something.
-			
-			obj = router.from_object(obj)
-			yield None, obj, False  # Let everyone know we're switching to the router.
+			target = partial(target, obj, **kwargs)
+		elif context is None:
+			target = partial(target, **kwargs)
+		else:
+			target = partial(target, context, **kwargs)
 		
-		def route(self, path):
-			routes = self.data
-			path = path.lstrip('/').split('/') + [None]
-			match = dict()
-			
-			for i, element in enumerate(path):
-				for route, children in routes:
-					if isinstance(route, re_type):
-						matched = route.match(element)
-						if not matched: continue
-						match.update(matched.groupdict())
-					
-					elif route != element:
-						continue
-					
-					if not isinstance(children, list):
-						return children, [i for i in path[i+1:] if i is not None], match
-					
-					routes = children
-					break
-				
-				else:
-					raise ValueError("Could not find route to satisfy path.")
-			
-			raise ValueError("Could not find route to satisfy path.")
-		
-			
-		
-		
-		try:
-			target, remainder, args = router.route(path)
-			remainder = '/' + '/'.join(remainder)
-			context.request.kwargs.update(args)
-		
-		except ValueError as e:
-			raise HTTPNotFound()
-		
-		yield path[:len(path)-len(remainder)].split('/'), target, not hasattr(target, '__dialect__')
+		yield processed, target, True

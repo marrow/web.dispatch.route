@@ -16,21 +16,6 @@ def test_dynamic_repr():
 	assert repr(__DYNAMIC__) == '<dynamic element>'
 
 
-def test_helper_free_root_route():
-	class HelperFree(object):
-		def root(self):
-			return "I'm the baby!"
-		
-		root.__route__ = "/"
-	
-	router = Router.from_object(HelperFree)
-	
-	assert len(router.routes) == 1
-	assert None in router.routes
-	assert router.routes[None] == HelperFree.root
-	assert router.routes[None](HelperFree()) == "I'm the baby!"
-
-
 def test_router_singleton():
 	assert Router.from_object(Root) is Router.from_object(Root)
 

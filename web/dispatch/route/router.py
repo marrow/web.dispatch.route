@@ -95,3 +95,29 @@ class Router(object):
 			parts[i] = re.compile(''.join(sub))
 		
 		return parts
+	
+	def route(self, path):
+		processed = list()
+		routes = self.routes
+		arguments = dict()
+		
+		for i, part in enumerate(path):
+			processed.append(part)
+			
+			if part in routes:  # Exact match, convienent!
+				routes = routes[part]
+				continue
+			
+			if __DYNAMIC__ not in routes:
+				raise LookupError("No static route element capable of handling: " + part)
+			
+			for route in routes[__DYNAMIC__]:
+				matched = route.match(part)
+				if not matched: continue
+				arguments.update(matched.groupdict())
+				routes = routes[__DYNAMIC__][route]
+				break
+			else:
+				raise LookupError("No dynamic route element capable of handling: " + part)
+		
+		return tuple(processed), routes[None], arguments

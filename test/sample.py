@@ -13,10 +13,10 @@ class Root(object):
 	def root(self):
 		return "I'm all people."
 	
-	@route('/user/{username}')
+	@route('/user/{username:[a-zA-Z]+}')
 	def user(self, username):
 		return "Hi, I'm " + username
 	
-	@route('/user/{username}/action')
+	@route('/user/{username:[a-zA-Z]+}/action')
 	def action(self, username):
 		return "I'm also " + username

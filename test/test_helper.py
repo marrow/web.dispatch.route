@@ -31,5 +31,4 @@ def test_helper_immediate_bind():
 	
 	assert len(router.routes) == 1
 	assert None in router.routes
-	assert router.routes[None] == HelperBound.root
 	assert router.routes[None](HelperBound()) == "I'm the baby!"

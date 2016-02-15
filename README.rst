@@ -2,7 +2,7 @@
 web.dispatch.route
 ==================
 
-    © 2015 Alice Bevan-McGregor and contributors.
+    © 2009-2016 Alice Bevan-McGregor and contributors.
 
 ..
 
@@ -10,7 +10,7 @@ web.dispatch.route
 
 ..
 
-    |latestversion| |downloads| |masterstatus| |mastercover| |issuecount|
+    |latestversion| |ghtag| |downloads| |masterstatus| |mastercover| |masterreq| |ghwatch| |ghstar|
 
 
 
@@ -52,7 +52,7 @@ installed.
 Development Version
 -------------------
 
-    |developstatus| |developcover|
+    |developstatus| |developcover| |ghsince| |issuecount| |ghfork|
 
 Development takes place on `GitHub <https://github.com/>`_ in the 
 `web.dispatch.route <https://github.com/marrow/web.dispatch.route/>`_ project.  Issue tracking, documentation, and
@@ -97,7 +97,7 @@ web.dispatch.route has been released under the MIT Open Source license.
 The MIT License
 ---------------
 
-Copyright © 2015 Alice Bevan-McGregor and contributors.
+Copyright © 2009-2016 Alice Bevan-McGregor and contributors.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the “Software”), to deal in the Software without restriction, including without limitation the
@@ -113,32 +113,60 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER I
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+.. |ghwatch| image:: https://img.shields.io/github/watchers/marrow/web.dispatch.route.svg?style=social&label=Watch
+    :target: https://github.com/marrow/web.dispatch.route/subscription
+    :alt: Subscribe to project activity on Github.
+
+.. |ghstar| image:: https://img.shields.io/github/stars/marrow/web.dispatch.route.svg?style=social&label=Star
+    :target: https://github.com/marrow/web.dispatch.route/subscription
+    :alt: Star this project on Github.
+
+.. |ghfork| image:: https://img.shields.io/github/forks/marrow/web.dispatch.route.svg?style=social&label=Fork
+    :target: https://github.com/marrow/web.dispatch.route/fork
+    :alt: Fork this project on Github.
+
 .. |masterstatus| image:: http://img.shields.io/travis/marrow/web.dispatch.route/master.svg?style=flat
-    :target: https://travis-ci.org/marrow/web.dispatch.route
-    :alt: Release Build Status
+    :target: https://travis-ci.org/marrow/web.dispatch.route/branches
+    :alt: Release build status.
+
+.. |mastercover| image:: http://img.shields.io/codecov/c/github/marrow/web.dispatch.route/master.svg?style=flat
+    :target: https://codecov.io/github/marrow/web.dispatch.route?branch=master
+    :alt: Release test coverage.
+
+.. |masterreq| image:: https://img.shields.io/requires/github/marrow/web.dispatch.route.svg
+    :target: https://requires.io/github/marrow/web.dispatch.route/requirements/?branch=master
+    :alt: Status of release dependencies.
 
 .. |developstatus| image:: http://img.shields.io/travis/marrow/web.dispatch.route/develop.svg?style=flat
-    :target: https://travis-ci.org/marrow/web.dispatch.route
-    :alt: Development Build Status
+    :target: https://travis-ci.org/marrow/web.dispatch.route/branches
+    :alt: Development build status.
+
+.. |developcover| image:: http://img.shields.io/codecov/c/github/marrow/web.dispatch.route/develop.svg?style=flat
+    :target: https://codecov.io/github/marrow/web.dispatch.route?branch=develop
+    :alt: Development test coverage.
+
+.. |developreq| image:: https://img.shields.io/requires/github/marrow/web.dispatch.route.svg
+    :target: https://requires.io/github/marrow/web.dispatch.route/requirements/?branch=develop
+    :alt: Status of development dependencies.
+
+.. |issuecount| image:: http://img.shields.io/github/issues-raw/marrow/web.dispatch.route.svg?style=flat
+    :target: https://github.com/marrow/web.dispatch.route/issues
+    :alt: Github Issues
+
+.. |ghsince| image:: https://img.shields.io/github/commits-since/marrow/web.dispatch.route/1.0.0.svg
+    :target: https://github.com/marrow/web.dispatch.route/commits/develop
+    :alt: Changes since last release.
+
+.. |ghtag| image:: https://img.shields.io/github/tag/marrow/web.dispatch.route.svg
+    :target: https://github.com/marrow/web.dispatch.route/tree/1.0.0
+    :alt: Latest Github tagged release.
 
 .. |latestversion| image:: http://img.shields.io/pypi/v/web.dispatch.route.svg?style=flat
     :target: https://pypi.python.org/pypi/web.dispatch.route
-    :alt: Latest Version
+    :alt: Latest released version.
 
 .. |downloads| image:: http://img.shields.io/pypi/dw/web.dispatch.route.svg?style=flat
     :target: https://pypi.python.org/pypi/web.dispatch.route
-    :alt: Downloads per Week
-
-.. |mastercover| image:: http://img.shields.io/coveralls/marrow/web.dispatch.route/master.svg?style=flat
-    :target: https://travis-ci.org/marrow/web.dispatch.route
-    :alt: Release Test Coverage
-
-.. |developcover| image:: http://img.shields.io/coveralls/marrow/web.dispatch.route/develop.svg?style=flat
-    :target: https://travis-ci.org/marrow/web.dispatch.route
-    :alt: Development Test Coverage
-
-.. |issuecount| image:: http://img.shields.io/github/issues/marrow/web.dispatch.route.svg?style=flat
-    :target: https://github.com/marrow/web.dispatch.route/issues
-    :alt: Github Issues
+    :alt: Downloads per week.
 
 .. |cake| image:: http://img.shields.io/badge/cake-lie-1b87fb.svg?style=flat

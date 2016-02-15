@@ -13,5 +13,5 @@ version = ".".join([str(i) for i in version_info[:3]]) + ((version_info.releasel
 
 author = namedtuple('Author', ['name', 'email'])("Alice Bevan-McGregor", 'alice@gothcandy.com')
 description = "Route-based dispatch; highly optimized tree-based routes for WebCore, with support for regular expression components."
-copyright = "2009-2015, Alice Bevan-McGregor and contributors"
-url = 'https://docs.webcore.io/dispatch/route'
+copyright = "2009-2016, Alice Bevan-McGregor and contributors"
+url = 'https://github.com/marrow/web.dispatch.route'

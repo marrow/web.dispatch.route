@@ -28,7 +28,7 @@ def test_helper_free_root_route():
 	assert len(router.routes) == 1
 	assert None in router.routes
 	assert router.routes[None] == HelperFree.root
-	assert router.routes[None](None) == "I'm the baby!"
+	assert router.routes[None](HelperFree()) == "I'm the baby!"
 
 
 def test_router_singleton():
@@ -48,7 +48,7 @@ class TestRouterSample(object):
 		assert 'user' in router.routes  # It's "user".
 		assert len(router.routes['user']) == 2  # Which has a terminus and dynamic continuation.
 		assert router.routes['user'][None] == Root.root  # The terminus is the "root" method.
-		assert router.routes['user'][None](None) == "I'm all people."  # It really is.
+		assert router.routes['user'][None](Root()) == "I'm all people."  # It really is.
 	
 	def test_dynamic_username(self, router):
 		assert __DYNAMIC__ in router.routes['user']
@@ -61,7 +61,7 @@ class TestRouterSample(object):
 		assert len(list(dynamic.values())[0]) == 2
 		
 		assert list(dynamic.values())[0][None] == Root.user
-		assert list(dynamic.values())[0][None](None, "GothAlice") == "Hi, I'm GothAlice"
+		assert list(dynamic.values())[0][None](Root(), "GothAlice") == "Hi, I'm GothAlice"
 	
 	def test_dynamic_username_action(self, router):
 		assert __DYNAMIC__ in router.routes['user']
@@ -74,4 +74,4 @@ class TestRouterSample(object):
 		assert len(list(dynamic.values())[0]) == 2
 		
 		assert list(dynamic.values())[0][None] == Root.user
-		assert list(dynamic.values())[0][None](None, "GothAlice") == "Hi, I'm GothAlice"
+		assert list(dynamic.values())[0][None](Root(), "GothAlice") == "Hi, I'm GothAlice"
